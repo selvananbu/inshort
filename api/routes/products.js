@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const multer = require('multer');
+const {Storage} = require('@google-cloud/storage');
+// const mimeTypes = require('mimetypes');
 
 
 var firebase = require('firebase');
@@ -58,6 +60,15 @@ router.post("/", upload.single('productImage'), (req, res, next) => {
   var userReference = firebase.database().ref('feed');
   var postRef = userReference.push();
   var key = postRef.key;
+  var fileName = req.file.path;
+  var newStorage = new Storage();
+  var bucket = newStorage.bucket('inshort-335e8.appspot.com');
+  bucket.upload(fileName,{destination:"uploads/"+fileName,predefinedAcl: 'publicRead'},(err,file) => {
+      console.log('====================================');
+      console.log("Uploaded");
+      console.log('====================================');
+  });
+
   var feed = {
         id: key,
         header: req.body.header, 
